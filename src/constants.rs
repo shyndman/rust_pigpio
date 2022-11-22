@@ -1,4 +1,3 @@
-
 pub enum GpioMode {
     INPUT = 0,
     OUTPUT = 1,
@@ -7,16 +6,16 @@ pub enum GpioMode {
     ALT2 = 6,
     ALT3 = 7,
     ALT4 = 3,
-    ALT5 = 2
+    ALT5 = 2,
 }
 
 pub enum Pud {
     OFF = 0,
     DOWN = 1,
-    UP = 2
+    UP = 2,
 }
 
 pub enum Level {
     ON = 1,
-    OFF = 0
+    OFF = 0,
 }

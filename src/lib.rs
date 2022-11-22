@@ -6,8 +6,8 @@
 //! #Rust PiGPIO
 //!
 //! The Rust wrapper of the C library functions
-pub mod pwm;
 pub mod constants;
+pub mod pwm;
 
 use std::string::String;
 
@@ -35,24 +35,16 @@ pub type GpioResponse = Result<u32, String>;
 extern "C" {
     fn gpioInitialise() -> i32;
     fn gpioTerminate();
-
     fn gpioSetMode(gpio: u32, mode: u32) -> i32;
     fn gpioGetMode(gpio: u32) -> i32;
-    fn gpioSetPullUpDown(gpio: u32, pud: u32) -> i32; //
+    fn gpioSetPullUpDown(gpio: u32, pud: u32) -> i32;
     fn gpioRead(gpio: u32) -> i32;
     fn gpioWrite(gpio: u32, level: u32) -> i32;
-
     fn gpioDelay(micros: u32) -> u32;
-
-    fn gpioSetAlertFunc(user_gpio: u32, alert_func: extern fn (u32, u32, u32)) -> i32;
-//    fn gpioSetAlertFuncEx(user_gpio: u32, f: gpioAlertFuncEx_t, void* userdata) -> i32;
-
-    fn gpioTrigger(user_gpio: u32, pulseLen: u32, level: u32) -> i32; //
-    fn gpioSetWatchdog(user_gpio: u32, timeout: u32) -> i32; //
+    fn gpioSetAlertFunc(user_gpio: u32, alert_func: extern "C" fn(u32, u32, u32)) -> i32;
+    fn gpioTrigger(user_gpio: u32, pulseLen: u32, level: u32) -> i32;
+    fn gpioSetWatchdog(user_gpio: u32, timeout: u32) -> i32;
 }
-
-
-
 
 /// Initializes the library.
 ///
@@ -61,9 +53,8 @@ pub fn initialize() -> GpioResponse {
     let result = unsafe { gpioInitialise() };
     match result {
         INIT_FAILED => Err("Initialize failed".to_string()),
-        _ => Ok(result as u32)
+        _ => Ok(result as u32),
     }
-
 }
 
 /// Terminates the library.
@@ -99,7 +90,7 @@ pub fn set_pull_up_down(gpio: u32, pud: Pud) -> GpioResult {
         OK => Ok(()),
         BAD_GPIO => Err("Bad gpio".to_string()),
         BAD_PUD => Err("Bad pud".to_string()),
-        _ => Err(DEFAULT_ERROR.to_string())
+        _ => Err(DEFAULT_ERROR.to_string()),
     }
 }
 
@@ -131,8 +122,8 @@ pub fn delay(microseconds: u32) -> u32 {
 
 /// Registers a function to be called (a callback) when the specified GPIO changes state
 // http://abyz.me.uk/rpi/pigpio/cif.html#gpioSetAlertFunc
-pub fn set_alert_func(gpio: u32, alert_func: extern fn(u32, u32, u32)) -> GpioResult {
-    match unsafe { gpioSetAlertFunc(gpio, alert_func)} {
+pub fn set_alert_func(gpio: u32, alert_func: extern "C" fn(u32, u32, u32)) -> GpioResult {
+    match unsafe { gpioSetAlertFunc(gpio, alert_func) } {
         OK => Ok(()),
         BAD_USER_GPIO => Err("Bad user gpio".to_string()),
         _ => Err(DEFAULT_ERROR.to_string()),
