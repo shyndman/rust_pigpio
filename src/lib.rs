@@ -41,6 +41,7 @@ extern "C" {
     fn gpioRead(gpio: u32) -> i32;
     fn gpioWrite(gpio: u32, level: u32) -> i32;
     fn gpioDelay(micros: u32) -> u32;
+    fn gpioTick() -> u32;
     fn gpioSetAlertFunc(user_gpio: u32, alert_func: extern "C" fn(u32, u32, u32)) -> i32;
     fn gpioTrigger(user_gpio: u32, pulseLen: u32, level: u32) -> i32;
     fn gpioSetWatchdog(user_gpio: u32, timeout: u32) -> i32;
@@ -118,6 +119,16 @@ pub fn write(gpio: u32, level: Level) -> GpioResult {
 /// Delays for at least the number of microseconds specified by microseconds.
 pub fn delay(microseconds: u32) -> u32 {
     unsafe { gpioDelay(microseconds) }
+}
+
+/// Returns the current system tick.
+///
+/// Tick is the number of microseconds since system boot.
+///
+/// As tick is an unsigned 32 bit quantity it wraps around after 2^32 microseconds, which
+/// is approximately 1 hour 12 minutes.
+pub fn system_tick() -> u32 {
+    unsafe { gpioTick() }
 }
 
 /// Registers a function to be called (a callback) when the specified GPIO changes state
